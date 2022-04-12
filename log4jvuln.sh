@@ -5,6 +5,7 @@
 ##############################################################################################################################
 
 #Get all the path where log4j core jar is present
+
 filepath=$(find / -name "log4j-core-*.jar")
 echo -e "\n\n"
 echo -e "Scanning for vulnerability CVE-2021-44228......\n"
