@@ -13,25 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Fetch supported PHP versions
-        id: fetch-versions
+      - name: Read supported versions
+        id: read-versions
         run: |
-          # Replace `owner/repo` with your actual repository name
-          curl -s "https://raw.githubusercontent.com/owner/repo/main/supported_versions.md" > supported_versions.md
+          echo "[]" > versions.json
+          while IFS= read -r version; do
+            echo "{\"label\": \"$version\", \"value\": \"$version\"}," >> versions.json
+          done < supported_versions.txt
 
-      - name: Display versions as dropdown
-        id: display-dropdown
+      - name: Remove trailing comma
+        run: sed -i '$ s/,$//' versions.json
+
+      - name: Commit versions.json
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: "Update PHP version dropdown"
+          commit_message: "Update supported PHP versions"
           branch: main
           files: |
             versions.json
-          actions: |
-            {
-              "name": "PHP Version",
-              "input_type": "select",
-              "options": [
-                $(awk '{print "{ \"label\": \""$2"\", \"value\": \""$2"\" }"}' supported_versions.md | tr -d '\n')
-              ]
-            }
